@@ -4,7 +4,7 @@
 ;; load emacs 24's package system. Add MELPA repository.
 (require 'package)
 (add-to-list 'package-archives
-	     '("melpa" . "http://melpa.org/packages/"))
+	     '("melpa" . "http://stable.melpa.org/packages/"))
 
 (package-initialize)
 
@@ -12,6 +12,13 @@
 (defvar lx-required-packages
   '(
     material-theme
+    multiple-cursors
+;    irony
+    company
+    company-irony
+    company-irony-c-headers
+    flycheck
+    flycheck-irony
     ) "a list of packages to ensure are installed at launch.")
 
 ;;-----------------------------------------------------
@@ -56,3 +63,34 @@
 ;; Theme customization (colors, etc.)
 ;;-----------------------------------------------------
 (load-theme 'material t)
+
+;;-----------------------------------------------------
+;; Multiple Cursors
+;;-----------------------------------------------------
+;;(require 'multiple-cursors)
+(define-key global-map (kbd "C-c s a") 'mc/mark-all-like-this)
+(define-key global-map (kbd "C-c s n") 'mc/mark-next-like-this)
+(define-key global-map (kbd "M-N")      'mc/mark-next-lines)
+(define-key global-map (kbd "M-S-<down>") 'mc/mark-next-lines)
+(define-key global-map (kbd "M-S-<up>")   'mc/mark-previous-lines)
+(define-key global-map (kbd "M-P")      'mc/mark-previous-lines)
+
+
+(setq irony-additional-clang-options (quote ("-std=c++14")))
+(setq flycheck-clang-language-standard (quote ("-std=c++14")))
+(add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
+
+(require 'company-irony-c-headers)
+(eval-after-load 'company
+  '(add-to-list 'company-backends '(company-irony-c-headers company-irony)))
+
+(eval-after-load 'flycheck
+  '(add-hook 'flycheck-mode-hook 'flycheck-irony-setup))
+
+(add-hook 'after-init-hook 'global-company-mode)
+
+(add-hook 'c++-mode-hook 'irony-mode)
+(add-hook 'c++-mode-hook 'company-mode)
+(add-hook 'c++-mode-hook 'flycheck-mode)
+
+(define-key global-map (kbd "C-SPC")  'company-complete)
