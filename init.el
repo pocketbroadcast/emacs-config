@@ -14,11 +14,16 @@
     material-theme
     multiple-cursors
 ;    irony
-    company
-    company-irony
-    company-irony-c-headers
-    flycheck
-    flycheck-irony
+    company                 ; c++
+    company-irony           ; c++
+    company-irony-c-headers ; c++
+;    company-rtags
+    flycheck            ;; c++
+    flycheck-irony      ;; c++
+    elpy                ;; python
+
+					;    ein                 ;; python-interactive
+    py-autopep8         ;; python-standard-conformance-check
     ) "a list of packages to ensure are installed at launch.")
 
 ;;-----------------------------------------------------
@@ -94,3 +99,19 @@
 (add-hook 'c++-mode-hook 'flycheck-mode)
 
 (define-key global-map (kbd "C-SPC")  'company-complete)
+
+;; --------------------------------------
+;; PYTHON CONFIGURATION
+;; --------------------------------------
+
+(setq elpy-rpc-python-command "python3")  ; for elpy
+(setq python-shell-interpreter "python3") ; for interactive shell
+
+
+(add-hook 'python-mode-hook 'elpy-mode)
+(with-eval-after-load 'elpy
+  (remove-hook 'elpy-modules 'elpy-module-flymake)
+;  (add-hook 'elpy-mode-hook 'elpy-rpc-python-command)
+  (add-hook 'elpy-mode-hook 'flycheck-mode)
+;  (add-hook 'elpy-mode-hook 'elpy-use-ipython)
+  (add-hook 'elpy-mode-hook 'py-autopep8-enable-on-save))
